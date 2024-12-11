@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "body-parser": "^1.20.3",
+    "express": "^4.21.2",
+    "express-handlebars": "^8.0.1"
+  },
+  "dependencies": {
+    "mongoose": "^8.8.4"
+  }
+}
