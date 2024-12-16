@@ -9,7 +9,14 @@ router.get("/posts", (req, res)=>{
 })
 
 router.get('/categorias', (req, res)=>{
-    res.render('admin/categorias')
+
+    categoria.find().then((categorias)=>{
+        res.render("admin/categorias", {categorias:categorias.map(categor => categor.toJSON())})
+    })
+    .catch((err)=>{
+        req.flash("error_msg", "Houve u erro ao registrar")
+        res.redirect('/admin')
+    })
 })
 
 router.get('/categorias/add', (req, res)=>{
@@ -17,16 +24,32 @@ router.get('/categorias/add', (req, res)=>{
 })
 
 router.post("/categorias/nova", (req, res)=>{
+
+    var erros = []
+
+if(!req.body.Nome || typeof req.body.Nome == undefined || req.body.Nome == null){
+    erros.push({Texto: "Nome inválido"})
+}
+if(!req.body.Sobrenome || typeof req.body.Sobrenome == undefined || req.body.Sobrenome == null){
+    erros.push({Texto: "Sobrenome inválido"})}
+
+if(erros.length > 0){
+    res.render("admin/addcategoria", {erros: erros})
+}else{
     const novaCategoria = {
         Nome: req.body.Nome,
         Sobrenome: req.body.Sobrenome
     }
-
     new categoria(novaCategoria).save().then(()=>{
-        console.log(`Funcionou a Criação da categoria\n
-            Nome: ${novaCategoria.Nome}\n
-            Sobrenome: ${novaCategoria.Sobrenome}`)
-    })
-})
+        req.flash("success_msg", "categoria Cadastrada com sucesso")
+        res.redirect("/admin/categorias")
+
+    }).catch((error)=>{
+        req.flash("error_msg", "Houve um erro ao salvar, tente novamente")
+        res.redirect("admin/categorias")
+    })}
+
+}
+)
 
 module.exports = router
