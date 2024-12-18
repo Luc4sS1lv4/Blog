@@ -1,21 +1,21 @@
 {{#each erros}}
 
-    <div class="alert alert-danger">{{Texto}}</div>
-    {{else}}
+<div class="alert alert-danger">{{Texto}}</div>
+{{else}}
 {{/each}}
 
 <h3>Nova categoria</h3>
 
 <div class="card">
-<div class="card-bady m-4">
+    <div class="card-bady m-4">
 
-<form action="/admin/categorias/nova" method="post">
-<label for="Nome" >Nome:</label>
-<input type="text" id="Nome" name="Nome" placeholder="Dgite seu Nome" class="form-control mb-2">
-<label for="Sobrenome" >Sobrenome</label>
-<input type="text" id="Sobrenome" name="Sobrenome" placeholder="Sobrenome"class="form-control mb-4">
+        <form action="/admin/categorias/nova" method="post">
+            <label for="Nome">Nome:</label>
+            <input type="text" id="Nome" name="Nome" placeholder="Dgite seu Nome" class="form-control mb-2">
+            <label for="Sobrenome">Sobrenome</label>
+            <input type="text" id="Sobrenome" name="Sobrenome" placeholder="Sobrenome" class="form-control mb-4">
 
-<button type="submit" class="btn btn-success">Enviar cadastro</button>
-</form>
-</div>
+            <button type="submit" class="btn btn-success">Enviar cadastro</button>
+        </form>
+    </div>
 </div>
