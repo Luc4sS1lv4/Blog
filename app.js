@@ -10,44 +10,44 @@ const session = require('express-session')
 const flash = require("connect-flash")
 
 //Configs
-    //Sessões
-        app.use(session({
-            secret: "ldsskamikaze",
-            resave: true,
-            saveUninitialized: true
-        }))
+//Sessões
+app.use(session({
+    secret: "ldsskamikaze",
+    resave: true,
+    saveUninitialized: true
+}))
 
-        app.use(flash())
+app.use(flash())
 
-    //Middleware
-    app.use((req, res, next) => {
-        res.locals.success_msg = req.flash("success_msg"),
+//Middleware
+app.use((req, res, next) => {
+    res.locals.success_msg = req.flash("success_msg"),
         res.locals.error_msg = req.flash("error_msg"),
         next()
-    })
+})
 //body Parser config.
-app.use(BodyParser.urlencoded({extended:true}))
+app.use(BodyParser.urlencoded({ extended: true }))
 app.use(BodyParser.json())
 
 //Handlebars Config.
-app.engine('handlebars', handlebars.engine({defaultLayout: 'main'}))
+app.engine('handlebars', handlebars.engine({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
 
 //Mongoose
- mongoose.Promise = global.Promisse
-mongoose.connect("mongodb://localhost/blogapp").then(()=>{
+mongoose.Promise = global.Promisse
+mongoose.connect("mongodb://localhost/blogapp").then(() => {
     console.log("conectado ao banco")
-}).catch((error)=>{
+}).catch((error) => {
     console.log(`O erro é: ${error}`)
 })
 
 //Public
-app.use(express.static(path.join(__dirname,'Public')))
+app.use(express.static(path.join(__dirname, 'Public')))
 
 //rotas
-app.use('/admin',admin)
+app.use('/admin', admin)
 
 //Servidor
-app.listen(port, ()=>{
+app.listen(port, () => {
     console.log('Servidor rodando')
 })
