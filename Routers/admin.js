@@ -70,29 +70,32 @@ router.get("/categorias/edit/:id", (req, res) => {
     })
 })
 
-router.post("/categorias/edit", (req, res)=>{
-    categoria.findOne({_id: req.body.id}).then((categoria)=>{
+router.post("/categorias/edit", (req, res) => {
+    categoria.findOne({ _id: req.body.id }).then((categoria) => {
         categoria.Nome = req.body.Nome
         categoria.Sobrenome = req.body.Sobrenome
 
-        categoria.save().then(()=>{
+        categoria.save().then(() => {
             res.redirect("/admin/categorias")
             req.flash("success_msg", "Categoria Atualizada com sucesso")
-        }).catch((error)=>{
+        }).catch((error) => {
             req.flash("error_msg", "Erro ao Salvar")
         })
     })
 })
 
 
-router.get("/categorias/excluir/:id", (req, res)=>{
-    categoria.deleteOne({_id: req.params.id}).then(()=>{
+router.get("/categorias/excluir/:id", (req, res) => {
+    categoria.deleteOne({ _id: req.params.id }).then(() => {
+
         req.flash("success_msg", "Categoria Deletada com Sucesso")
         res.redirect("/admin/categorias")
-    }).catch((erro)=>{
+
+    }).catch((erro) => {
+
         res.redirect("/admin/categorias")
-        req.flash("error_msg","Postagem não existente")
-  
+        req.flash("error_msg", "Postagem não existente")
+
     })
 })
 

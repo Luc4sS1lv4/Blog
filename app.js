@@ -45,6 +45,9 @@ mongoose.connect("mongodb://localhost/blogapp").then(() => {
 app.use(express.static(path.join(__dirname, 'Public')))
 
 //rotas
+app.get("/", (req, res) => {
+    res.render("index")
+})
 app.use('/admin', admin)
 
 //Servidor
