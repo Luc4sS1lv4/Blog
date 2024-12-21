@@ -84,4 +84,16 @@ router.post("/categorias/edit", (req, res)=>{
     })
 })
 
+
+router.get("/categorias/excluir/:id", (req, res)=>{
+    categoria.deleteOne({_id: req.params.id}).then(()=>{
+        req.flash("success_msg", "Categoria Deletada com Sucesso")
+        res.redirect("/admin/categorias")
+    }).catch((erro)=>{
+        res.redirect("/admin/categorias")
+        req.flash("error_msg","Postagem não existente")
+  
+    })
+})
+
 module.exports = router
