@@ -3,6 +3,8 @@ const router = express.Router()
 mongoose = require('mongoose')
 require('../models/Categoria')
 const categoria = mongoose.model('Categoria')
+require("../models/Postagens")
+const postagem = mongoose.model("Postagem")
 
 router.get("/posts", (req, res) => {
     res.render("admin/index")
@@ -47,7 +49,7 @@ router.post("/categorias/nova", (req, res) => {
             Sobrenome: req.body.Sobrenome
         }
 
-        //flash recebe dois argumentos("Variavel global neste caso", ""Mensagem que essa variavel exibie)
+        //flash recebe dois argumentos("Variavel global neste caso", "Mensagem que essa variavel exibie")
         new categoria(novaCategoria).save().then(() => {
             req.flash("success_msg", "categoria Cadastrada com sucesso")
             res.redirect("/admin/categorias")
@@ -99,4 +101,40 @@ router.get("/categorias/excluir/:id", (req, res) => {
     })
 })
 
+
+router.get("/postagens", (req, res)=>{
+    postagem.find().lean().populate("Categoria").sort({data: "desc"}).then((postagens)=>{
+        res.render("admin/postagens", {postagens: postagens})
+
+    })
+})
+
+
+router.get("/postagem/add", (req, res)=>{
+    categoria.find().lean().then((categoria)=>{
+        res.render("admin/addpostagem", ({categoria: categoria}))
+        
+    }).catch((error)=>{
+        req.flash("error_msg", "Categoria não existente")
+    })
+})
+
+router.post("/postagem/nova", (req, res)=>{
+    const nova_Postagem = {
+        Titulo: req.body.Titulo,
+        Slug: req.body.slug,
+        Conteudo: req.body.conteudo,
+        Descricao: req.body.descricao,
+        Categoria: req.body.categoria
+    }
+
+    new postagem(nova_Postagem).save().then(()=>{
+        req.flash("success_msg", "Postagem criada")
+        res.redirect("/admin/postagens") 
+    }).catch((error)=>{
+        req.flash("error_msg","Erro ao criar categoria")
+        console.log(`Erro: ${error}`)
+    })
+
+})
 module.exports = router

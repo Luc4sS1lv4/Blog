@@ -4,11 +4,11 @@ const Schema = mongoose.Schema
 const Categoria = new Schema({
     Nome:{
         type: String,
-        require: true
+        required: true
     },
     Sobrenome: {
         type: String,
-        require:true
+        required:true
     },
     Data:{
         type: Date,
@@ -17,4 +17,7 @@ const Categoria = new Schema({
 
 })
 
-mongoose.model("Categoria", Categoria)
+module.exports = mongoose.model("Categoria", Categoria);
+
+
+  
