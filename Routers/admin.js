@@ -104,8 +104,12 @@ router.get("/categorias/excluir/:id", (req, res) => {
 
 router.get("/postagens", (req, res) => {
     postagem.find().lean().populate("Categoria").sort({ data: "desc" }).then((postagens) => {
+        
         res.render("admin/postagens", { postagens: postagens })
 
+    }).catch((error)=>{
+        req.flash("error_msg", "Houve um erro ao listar as postagens")
+        res.redirect("/admin")
     })
 })
 
@@ -160,7 +164,7 @@ router.get("/postagem/edit/:id", (req, res) => {
     postagem.findOne({ _id: req.params.id }).lean().then((postagens) => {
 
         categoria.find().lean().then((categorias) => {
-            res.render('admin/editPostagem', { postagens: postagens, categorias:categorias })
+            res.render('admin/editPostagem', { postagens: postagens, categorias: categorias })
 
         }).catch((error) => {
             req.flash("error_msg", "Houve um erro ao carregar o formulário")
@@ -170,16 +174,31 @@ router.get("/postagem/edit/:id", (req, res) => {
     })
 })
 
-router.post("/postagem/edite", (req, res)=>{
-    postagem.findOne({_id: req.body.id}).then((postagem)=>{
-        postagem.Titulo = req.body.Titulo
-        postagem.Slug = req.body.slug
+router.post("/postagem/edite", (req, res) => {
+    postagem.findOne({ _id: req.body.id }).then((postagem) => {
+        if (!postagem) {
+            req.flash("error_msg", "Postagem não encontrada");
+            return res.redirect("/admin/postagens");
+        }
 
-        postagem.save().then(()=>{
-            res.redirect("/admin/postagens")
-            req.flash("success_msg", "Postagem atualizada")
-            console.log("Postagem atualizada")
-        })
-    })
-})
+        // Atualiza os campos
+        postagem.Titulo = req.body.Titulo;
+        postagem.Slug = req.body.slug;
+        postagem.Descricao = req.body.descricao;
+        postagem.Conteudo = req.body.conteudo;
+        postagem.categoria = req.body.Nome;
+        
+        postagem.save().then(() => {
+            req.flash("success_msg", "Postagem atualizada");
+            res.redirect("/admin/postagens");
+        }).catch((error) => {
+            req.flash("error_msg", "Erro interno ao salvar a postagem: " + error);
+            res.redirect("/admin/postagens");
+        });
+    }).catch((error) => {
+        req.flash("error_msg", "Erro ao buscar a postagem: " + error);
+        res.redirect("/admin/postagens");
+    });
+});
+
 module.exports = router

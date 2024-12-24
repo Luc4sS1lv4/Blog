@@ -8,6 +8,7 @@
         <form action="/admin/postagem/edite" method="post">
 
             <label for="Titulo">Título:</label>
+            <input type="hidden" name="id" value="{{postagens._id}}">
             <input type="text" value="{{postagens.Titulo}}" name="Titulo" class="form-control">
             <label for="slug">Slug: </label>
             <input type="text" value="{{postagens.Slug}}" name="slug" class="form-control">
@@ -16,7 +17,7 @@
             <label for="conteudo">Conteudo</label>
             <textarea name="conteudo" class="form-control">{{postagens.Conteudo}}</textarea>
             <label for="categoria">Categoria: </label>
-            <select name="categoria" value="{{categoria.Nome}}" class="custom-select mt-4">
+            <select name="categoria" value="{{categorias.Nome}}" class="custom-select mt-4">
                 {{#each categorias}}
                 <option value="{{_id}}">{{Nome}}</option>
                 {{else}}
