@@ -102,39 +102,84 @@ router.get("/categorias/excluir/:id", (req, res) => {
 })
 
 
-router.get("/postagens", (req, res)=>{
-    postagem.find().lean().populate("Categoria").sort({data: "desc"}).then((postagens)=>{
-        res.render("admin/postagens", {postagens: postagens})
+router.get("/postagens", (req, res) => {
+    postagem.find().lean().populate("Categoria").sort({ data: "desc" }).then((postagens) => {
+        res.render("admin/postagens", { postagens: postagens })
 
     })
 })
 
 
-router.get("/postagem/add", (req, res)=>{
-    categoria.find().lean().then((categoria)=>{
-        res.render("admin/addpostagem", ({categoria: categoria}))
-        
-    }).catch((error)=>{
+router.get("/postagem/add", (req, res) => {
+    categoria.find().lean().then((categoria) => {
+        res.render("admin/addpostagem", ({ categoria: categoria }))
+
+    }).catch((error) => {
         req.flash("error_msg", "Categoria não existente")
     })
 })
 
-router.post("/postagem/nova", (req, res)=>{
-    const nova_Postagem = {
-        Titulo: req.body.Titulo,
-        Slug: req.body.slug,
-        Conteudo: req.body.conteudo,
-        Descricao: req.body.descricao,
-        Categoria: req.body.categoria
+router.post("/postagem/nova", (req, res) => {
+
+    var erros = []
+
+    if (!req.body.Titulo || typeof req.body.Titulo == null || req.body.Titulo == undefined) {
+        erros.push({ Texto: "Título Inválido!! Preencha o campo corretamente" })
+    } if (!req.body.slug || typeof req.body.slug == null || req.body.slug == undefined) {
+        erros.push({ Texto: "Slug Inválido, por favor preencha o campo corretamente" })
+    } if (!req.body.conteudo || typeof req.body.conteudo == null || req.body.conteudo == undefined) {
+        erros.push({ Texto: "Conteudo Inválido, por favor preencha o campo corretamente" })
+    } if (!req.body.descricao || typeof req.body.descricao == null || req.body.descricao == undefined) {
+        erros.push({ Texto: "Descrição inválida, por favor preencha corretamente" })
+    } if (req.body.categoria == "0") {
+        erros.push({ Texto: "Categoria inválida" })
+    } if (erros.length > 0) {
+        res.render("admin/addpostagem", { erros: erros })
+    } else {
+
+        const nova_Postagem = {
+            Titulo: req.body.Titulo,
+            Slug: req.body.slug,
+            Conteudo: req.body.conteudo,
+            Descricao: req.body.descricao,
+            Categoria: req.body.categoria
+        }
+
+        new postagem(nova_Postagem).save().then(() => {
+            req.flash("success_msg", "Postagem criada")
+            res.redirect("/admin/postagens")
+        }).catch((error) => {
+            req.flash("error_msg", "Erro ao criar categoria")
+            console.log(`Erro: ${error}`)
+        })
     }
 
-    new postagem(nova_Postagem).save().then(()=>{
-        req.flash("success_msg", "Postagem criada")
-        res.redirect("/admin/postagens") 
-    }).catch((error)=>{
-        req.flash("error_msg","Erro ao criar categoria")
-        console.log(`Erro: ${error}`)
-    })
+})
 
+router.get("/postagem/edit/:id", (req, res) => {
+    postagem.findOne({ _id: req.params.id }).lean().then((postagens) => {
+
+        categoria.find().lean().then((categorias) => {
+            res.render('admin/editPostagem', { postagens: postagens, categorias:categorias })
+
+        }).catch((error) => {
+            req.flash("error_msg", "Houve um erro ao carregar o formulário")
+            res.redirect("/admin/postagens")
+        })
+
+    })
+})
+
+router.post("/postagem/edite", (req, res)=>{
+    postagem.findOne({_id: req.body.id}).then((postagem)=>{
+        postagem.Titulo = req.body.Titulo
+        postagem.Slug = req.body.slug
+
+        postagem.save().then(()=>{
+            res.redirect("/admin/postagens")
+            req.flash("success_msg", "Postagem atualizada")
+            console.log("Postagem atualizada")
+        })
+    })
 })
 module.exports = router
